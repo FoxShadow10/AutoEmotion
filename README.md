@@ -35,7 +35,7 @@ You can install AutoEmotion by adding the custom repository:
 2. Go to the *Experimental* tab
 3. Under *Custom Plugin Repositories* section, add the following Dalamud repo:
 
-`TODO: ADD LINK TO REPO WHEN PUSHED :P`
+`https://raw.githubusercontent.com/FoxShadow10/AutoEmotion/main/repo.json`
 
 4. Save and close
 5. Install the plugin **AutoEmotion** as you would with any other plugin
