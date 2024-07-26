@@ -1,0 +1,14 @@
+{
+    "Author": "FoxShadow10",
+    "Name": "Auto Emotion",
+    "Punchline": "Auto-execute configured emotes as you chat!",
+    "Description": "This plugin lets you assign a keyword to an emote. When the keyword is typed in the chat, the corresponding emote is automatically triggered.\n\nThe plugin icon was created by https://twitter.com/AlcielCroix",
+    "InternalName": "AutoEmotion",
+    "RepoUrl": "",
+    "ApplicableVersion": "any",
+    "Tags": [ "Chat", "Emote", "RP" ],
+    "DalamudApiLevel": 10,
+    "LoadPriority": 90,
+    "IconUrl": "TODO: MODIFY POST PUSH",
+    "AssemblyVersion" : "0.1.0.2"
+}
