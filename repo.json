@@ -14,13 +14,13 @@
     ],
     "DalamudApiLevel": 10,
     "LoadPriority": 90,
-    "IconUrl": "TODO: MODIFY POST PUSH",
-    "RepoUrl": "TODO: MODIFY POST PUSH",
+    "IconUrl": "https://raw.githubusercontent.com/FoxShadow10/AutoEmotion/main/AutoEmotion/images/plugin_icon.png",
+    "RepoUrl": "https://raw.githubusercontent.com/FoxShadow10/AutoEmotion/main/repo.json",
     "IsHide": "False",
     "IsTestingExclusive": "False",
     "DownloadCount": 1,
     "LastUpdate": 1618608322,
-    "DownloadLinkInstall": "TODO: MODIFY POST PUSH",
-    "DownloadLinkUpdate": "TODO: MODIFY POST PUSH"
+    "DownloadLinkInstall": "https://github.com/FoxShadow10/AutoEmotion/releases/download/0.0.0/AutoEmotion.zip",
+    "DownloadLinkUpdate": "https://github.com/FoxShadow10/AutoEmotion/releases/download/0.0.0/AutoEmotion.zip"
   }
 ]
