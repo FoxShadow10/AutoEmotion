@@ -11,8 +11,6 @@ Customizable triggers and combinations to fit your specific style and expression
 
 ## Main Points
 
-<img src="./.github/assets/gui.png" align="right" style="margin-left:15px; max-width:400px"> 
-
 * Features
   * Slash commands to quickly turn the plugin on or off
   * Settings UI
@@ -22,6 +20,8 @@ Customizable triggers and combinations to fit your specific style and expression
   * Case-sensitive check for trigger
   * Check if the trigger is contained in the message or if it's a whole word
   * Organize and reorder the trigger list
+
+<img src="./.github/assets/gui.png" align="right" style="margin-left:15px; max-width:400px"> 
 
 <br clear="right">
 
