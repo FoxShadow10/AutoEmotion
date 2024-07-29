@@ -60,3 +60,6 @@ Special thanks to the projects that make this plugin work:
 
 * [Dalamud](https://github.com/goatcorp/Dalamud/)
 * [ECommons](https://github.com/NightmareXIV/ECommons)
+* [SimpleHeels](https://github.com/Caraxi/SimpleHeels)
+* [ChatBubbles](https://github.com/Haplo064/ChatBubbles)
+* [Moodles](https://github.com/kawaii/Moodles)
