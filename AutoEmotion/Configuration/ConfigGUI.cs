@@ -147,9 +147,13 @@ namespace AutoEmotion
                 var i = 0;
                 var chkSize = checkboxSize * ImGuiHelpers.GlobalScale;
 
-                ImGui.Text("Enable Plugin: ");
+                ImGui.Checkbox("Enable Plugin##isActived", ref configGUI.isActived);
                 ImGui.SameLine();
-                ImGui.Checkbox("##isActived", ref configGUI.isActived);
+                ImGui.Checkbox("Hide Emote Log##isLogHide", ref configGUI.isLogHide);
+                if (ImGui.IsItemHovered())
+                {
+                    ImGui.SetTooltip("When enabled the emotes used by AutoEmotion will not display the log message.");
+                }
                 ImGui.Separator();
 
                 //****************************** LIST OF CHANNEL

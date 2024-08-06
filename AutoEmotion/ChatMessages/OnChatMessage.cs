@@ -3,13 +3,11 @@ using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Plugin;
 using ECommons.DalamudServices;
-using FFXIVClientStructs.Havok;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AutoEmotion
 {
@@ -149,8 +147,8 @@ namespace AutoEmotion
                     }
                 }
             }
-            solution.Item1 = bestEmote.Item2;
-            solution.Item2 = bestExpression.Item2;
+            solution.Item1 = config.isLogHide & !string.IsNullOrEmpty(bestEmote.Item2) ? (bestEmote.Item2 + " motion") : bestEmote.Item2;
+            solution.Item2 = config.isLogHide & !string.IsNullOrEmpty(bestExpression.Item2) ? (bestExpression.Item2 + " motion") : bestExpression.Item2;
             stopwatch.Stop();
             Svc.Log.Debug($"Done; elapsed: {stopwatch.ElapsedMilliseconds}ms");
             return solution;

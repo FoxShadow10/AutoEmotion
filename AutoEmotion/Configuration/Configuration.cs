@@ -12,6 +12,7 @@ public class AutoEmotionConfig : IPluginConfiguration
 {
     public int Version { get; set; } = 0;
     public bool isActived = true;
+    public bool isLogHide = false;
     public Dictionary<string, List<TriggerData>> triggerLists = new Dictionary<string, List<TriggerData>>(StringComparer.OrdinalIgnoreCase) { };
     public List<string> triggerOrder = new List<string> { };
     public List<XivChatType> allowedChannels { get; set; } = new() { XivChatType.Say };
