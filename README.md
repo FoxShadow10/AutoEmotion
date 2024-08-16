@@ -63,3 +63,8 @@ Special thanks to the projects that make this plugin work:
 * [SimpleHeels](https://github.com/Caraxi/SimpleHeels)
 * [ChatBubbles](https://github.com/Haplo064/ChatBubbles)
 * [Moodles](https://github.com/kawaii/Moodles)
+
+## ⚠️Disclaimer⚠️
+This is not an official Dalamud plugin and contains automatisms.
+
+Normally nothing should happen, but use it at your own risk.
