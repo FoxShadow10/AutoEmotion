@@ -1,28 +1,26 @@
 using System;
 using System.Collections.Generic;
 using Dalamud.Utility;
-using Lumina.Excel.GeneratedSheets2;
+using Lumina.Excel.Sheets;
 using Newtonsoft.Json;
-using System.Linq;
 using ECommons.DalamudServices;
+using FFXIVClientStructs.FFXIV.Client.Game.Character;
 
 namespace AutoEmotion.Utility;
 
 public unsafe record EmoteIdentifier([property: JsonProperty("e")] uint EmoteID)
 {
-    private static short _expressionID = 3;
+    private static readonly short ExpressionID = 3;
 
     public static Lazy<List<EmoteIdentifier>> EmoteList = new(() =>
     {
-        var list = new List<EmoteIdentifier>();
-        var emotes = Svc.Data.GetExcelSheet<Emote>()!.Where(emote =>
+        var list = new List<EmoteIdentifier>
         {
-            return (emote.TextCommand != null && emote.TextCommand.Value != null && emote.TextCommand.Value.Command.ToString().StartsWith("/"));
-        });
-        list.Add(new EmoteIdentifier(0));
-        foreach (var emote in emotes)
+            new EmoteIdentifier(0)
+        };
+        foreach (var emote in Svc.Data.GetExcelSheet<Emote>()!)
         {
-            if (emote.RowId == 0 || emote.Icon == 0 || emote.EmoteCategory.Value.RowId == _expressionID) continue;
+            if (emote.TextCommand.IsValid == false || emote.EmoteCategory.Value.RowId == ExpressionID) continue;
             for (byte i = 0; i < emote.RowId switch { 1 => 1, 2 => 1, 3 => 1, _ => 1 }; i++)
             {
                 list.Add(new EmoteIdentifier(emote.RowId));
@@ -33,15 +31,13 @@ public unsafe record EmoteIdentifier([property: JsonProperty("e")] uint EmoteID)
 
     public static Lazy<List<EmoteIdentifier>> ExpressionList = new(() =>
     {
-        var list = new List<EmoteIdentifier>();
-        var emotes = Svc.Data.GetExcelSheet<Emote>()!.Where(emote =>
+        var list = new List<EmoteIdentifier>
         {
-            return (emote.TextCommand != null && emote.TextCommand.Value != null && emote.TextCommand.Value.Command.ToString().StartsWith("/"));
-        });
-        list.Add(new EmoteIdentifier(0));
-        foreach (var emote in emotes)
+            new EmoteIdentifier(0)
+        };
+        foreach (var emote in Svc.Data.GetExcelSheet<Emote>()!)
         {
-            if (emote.RowId == 0 || emote.Icon == 0 || emote.EmoteCategory.Value.RowId != _expressionID) continue;
+            if (emote.TextCommand.IsValid == false || emote.EmoteCategory.Value.RowId != ExpressionID) continue;
             list.Add(new EmoteIdentifier(emote.RowId));
         }
         return list;
@@ -58,22 +54,22 @@ public unsafe record EmoteIdentifier([property: JsonProperty("e")] uint EmoteID)
     {
         var emote = Svc.Data.GetExcelSheet<Emote>()?.GetRow(emoteID);
         if (emote == null) return $"Emote#{emoteID}";
-        return emote.Name.ToDalamudString().TextValue;
+        return emote.Value.Name.ToDalamudString().TextValue;
     }
 
     public static uint FetchIcon(uint emoteID)
     {
         var emote = Svc.Data.GetExcelSheet<Emote>()?.GetRow(emoteID);
         if (emote == null) return 0;
-        return emote.Icon;
+        return emote.Value.Icon;
     }
 
     public static string FetchCommand(uint emoteID)
     {
         var emote = Svc.Data.GetExcelSheet<Emote>()?.GetRow(emoteID);
         if (emote == null) return $"Emote#{emoteID}";
-        var command = emote.TextCommand.Value;
-        if (command == null) return $"EmoteCommand#{emoteID}";
+        var command = emote.Value.TextCommand.Value;
+        if (command.Equals(null)) return $"EmoteCommand#{emoteID}";
         return command.Command.ToDalamudString().TextValue;
     }
 
