@@ -1,12 +1,13 @@
-using AutoEmotion.Configuration;
+using AutoEmotion.Configuration.Data;
+using AutoEmotion.Utility;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Plugin;
+using Dalamud.Utility;
 using ECommons.DalamudServices;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace AutoEmotion
@@ -16,6 +17,8 @@ namespace AutoEmotion
         List<char> toRemove = new() {
             '','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',
         };
+
+        private enum QueueType { Emote, Expression, Both }
 
         private string AppendBackslashToNonAlphanumeric(string input)
         {
@@ -27,17 +30,23 @@ namespace AutoEmotion
 
             return result;
         }
-
-        private void ChatMessage(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool isHandled)
+        private bool CanExecute(XivChatType type)
         {
-            if (isHandled) return;
-            if (!config.isActived) return;
+            if (!config.isActived) return false;
+            if (!config.isChatActive) return false;
             if (config.triggerLists.Count <= 0)
             {
                 Svc.Log.Information("No triggers set; nothing will happen.");
-                return;
+                return false;
             };
-            if (!config.allowedChannels.Contains(type)) return;
+            if (!config.allowedChannels.Contains(type)) return false;
+            if (!CharacterUtility.IsCharacterAvailable(config)) return false;
+            return true;
+        }
+        private void ChatMessage(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool isHandled)
+        {
+            if (isHandled) return;
+            if (!CanExecute(type)) return;
 
             var senderSanitized = sender.TextValue;
 
@@ -51,15 +60,32 @@ namespace AutoEmotion
                 var result = messageParser(message);
                 try
                 {
-                    if (result.Item2.Length > 0)
+                    if (result.emote.command.IsNullOrEmpty() && result.expression.command.IsNullOrEmpty()) return;
+                    if (result.emote.delay == result.expression.delay)
                     {
-                        Svc.Log.Debug($"Queued expression: {result.Item2}");
-                        messageQueue.Enqueue(result.Item2);
+                        Enqueue(QueueType.Both, result);
                     }
-                    if (result.Item1.Length > 0)
+                    else if (result.expression.delay > result.emote.delay)
                     {
-                        Svc.Log.Debug($"Queued emote: {result.Item1}");
-                        messageQueue.Enqueue(result.Item1);
+                        if (!result.emote.command.IsNullOrEmpty())
+                        {
+                            Enqueue(QueueType.Emote, result);
+                        }
+                        if (!result.expression.command.IsNullOrEmpty())
+                        {
+                            Enqueue(QueueType.Expression, result);
+                        }
+                    }
+                    else
+                    {
+                        if (!result.expression.command.IsNullOrEmpty())
+                        {
+                            Enqueue(QueueType.Expression, result);
+                        }
+                        if (!result.emote.command.IsNullOrEmpty())
+                        {
+                            Enqueue(QueueType.Emote, result);
+                        }
                     }
                 }
                 catch (Exception e)
@@ -68,105 +94,127 @@ namespace AutoEmotion
                 }
             }
         }
-
-        private (string, string) messageParser(SeString messageString)
+        private void Enqueue(QueueType queueType, ((string command, int delay) emote, (string command, int delay) expression) tuple)
         {
-            var input = messageString.TextValue;
-            var stopwatch = Stopwatch.StartNew();
-            var solution = (string.Empty, string.Empty);
-            Svc.Log.Debug($"Received input: '{input}'");
-            var keywords = config.triggerLists.Keys.ToList();
-            HashSet<List<TriggerData>> candidates = [];
-            var lowercaseInput = input.ToLower();
-            var lowercaseSplitInputs = lowercaseInput.Split(' ');
-            var splitInputs = input.Split(' ');
-            (Int64, string) bestEmote = (long.MaxValue, string.Empty);
-            (Int64, string) bestExpression = (long.MaxValue, string.Empty);
-            foreach (var keyword in keywords)
+            QueueData queueData = new QueueData();
+            switch (queueType)
             {
-                // select all the possible candidates for full sentence
-                if (lowercaseInput.Contains(keyword, StringComparison.CurrentCultureIgnoreCase))
+                case QueueType.Emote:
+                    {
+                        queueData.emote = tuple.emote.command;
+                        queueData.SetDelay(tuple.emote.delay);
+                        messageQueue.Enqueue(queueData);
+                        Svc.Log.Debug($"Enqueue Emote {queueData.emote} with delay {queueData.delay}ms");
+                        break;
+                    }
+                case QueueType.Expression:
+                    {
+                        queueData.expression = tuple.expression.command;
+                        queueData.SetDelay(tuple.expression.delay);
+                        messageQueue.Enqueue(queueData);
+                        Svc.Log.Debug($"Enqueue expression {queueData.expression} with delay {queueData.delay}ms");
+                        break;
+                    }
+                default:
+                    {
+                        queueData.emote = tuple.emote.command;
+                        queueData.expression = tuple.expression.command;
+                        queueData.SetDelay(tuple.emote.delay);
+                        messageQueue.Enqueue(queueData);
+                        Svc.Log.Debug($"Enqueue Emote {queueData.emote} and Expression {queueData.expression} with delay {queueData.delay}ms");
+                        break;
+                    }
+            }
+        }
+
+        public ((string command, int delay) emote, (string command, int delay) expression) messageParser(SeString messageString)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            var input = messageString.TextValue;
+            var lowerInput = input.ToLower();
+            string[] words = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var solution = ((string.Empty, 0), (string.Empty, 0));
+            HashSet<List<TriggerData>> candidates = [];
+            TriggerData bestEmote = new TriggerData() { calculatedPriority = long.MaxValue };
+            TriggerData bestExpression = new TriggerData() { calculatedPriority = long.MaxValue };
+            Svc.Log.Debug($"Received input: '{input}'");
+
+            foreach (var keyword in config.triggerLists)
+            {
+                if (CompareStrings(lowerInput, keyword.Key.ToLower(), true, false))
                 {
-                    candidates.Add(config.triggerLists.GetValueOrDefault(keyword, []));
-                }
-                // select all the possible candidates for each word
-                if (lowercaseSplitInputs.Contains(keyword.ToLower()))
-                {
-                    candidates.Add(config.triggerLists.GetValueOrDefault(keyword, []));
+                    candidates.Add(config.triggerLists.GetValueOrDefault(keyword.Key, []));
                 }
             }
             Svc.Log.Debug($"Candidates size: {candidates.Count}");
             foreach (var candidate in candidates)
             {
-                for (var i = 0; i < candidate.Count; i++)
+                foreach (var data in candidate)
                 {
-                    // evaluate for emote
-                    if (candidate[i].calculatedPriority < bestEmote.Item1 || candidate[i].calculatedPriority < bestExpression.Item1)
-                    {
-                        Svc.Log.Debug($"[{i}] Evaluating candidate: '{candidate[i].trigger}'");
-                        // evaluate for case sensitive
-                        if (candidate[i].isCaseSensitive)
-                        {
-                            // contains allowed
-                            if (candidate[i].isContains)
-                            {
-                                var matches = input.Contains(candidate[i].trigger);
-                                assignResult(matches, candidate[i], ref bestEmote, ref bestExpression);
-                            }
-                            else // contains not allowed
-                            {
-                                var matches = input == candidate[i].trigger;
-                                assignResult(matches, candidate[i], ref bestEmote, ref bestExpression);
-                                foreach (var caseSensitiveSplit in splitInputs)
-                                {
-                                    matches = caseSensitiveSplit == candidate[i].trigger;
-                                    assignResult(matches, candidate[i], ref bestEmote, ref bestExpression);
-                                }
-                            }
-                        }
-                        // evaluate for not case sensitive options
-                        else
-                        {
-                            if (candidate[i].isContains)
-                            {
-                                var matches = lowercaseInput.Contains(candidate[i].trigger, StringComparison.CurrentCultureIgnoreCase);
-                                assignResult(matches, candidate[i], ref bestEmote, ref bestExpression);
-                            }
-                            else
-                            {
-                                var matches = lowercaseInput.Equals(candidate[i].trigger, StringComparison.CurrentCultureIgnoreCase);
-                                assignResult(matches, candidate[i], ref bestEmote, ref bestExpression);
-                                foreach (var split in lowercaseSplitInputs)
-                                {
-                                    matches = split.Equals(candidate[i].trigger, StringComparison.CurrentCultureIgnoreCase);
-                                    assignResult(matches, candidate[i], ref bestEmote, ref bestExpression);
-                                }
-                            }
+                    if (data.calculatedPriority > bestEmote.calculatedPriority || data.calculatedPriority > bestExpression.calculatedPriority) { continue; }
+                    Svc.Log.Debug($"Evaluating candidate: '{data.trigger}'");
 
+                    bool isMatch = false;
+
+                    if (data.isContains || data.trigger.Contains(" "))
+                    {
+                        // Check if the search text is contained anywhere in the text
+                        isMatch = CompareStrings(input, data.trigger, data.isCaseSensitive, false);
+                    }
+                    else
+                    {
+                        foreach (string word in words)
+                        {
+                            if (CompareStrings(word, data.trigger, data.isCaseSensitive))
+                            {
+                                isMatch = true;
+                                break;
+                            }
                         }
+                    }
+
+                    if (isMatch)
+                    {
+                        if (!string.IsNullOrEmpty(data.emoteCommand) && data.calculatedPriority < bestEmote.calculatedPriority) bestEmote = data;
+                        if (!string.IsNullOrEmpty(data.expressionCommand) && data.calculatedPriority < bestExpression.calculatedPriority) bestExpression = data;
                     }
                 }
             }
-            solution.Item1 = config.isLogHide & !string.IsNullOrEmpty(bestEmote.Item2) ? (bestEmote.Item2 + " motion") : bestEmote.Item2;
-            solution.Item2 = config.isLogHide & !string.IsNullOrEmpty(bestExpression.Item2) ? (bestExpression.Item2 + " motion") : bestExpression.Item2;
+            if (!bestEmote.trigger.IsNullOrEmpty())
+            {
+                solution.Item1.Item1 = bestEmote.emoteCommand;
+                solution.Item1.Item2 = calculateDelay(lowerInput, bestEmote.trigger.ToLower(), config.charDelay);
+            }
+            if (!bestExpression.trigger.IsNullOrEmpty())
+            {
+                solution.Item2.Item1 = bestExpression.expressionCommand;
+                solution.Item2.Item2 = calculateDelay(lowerInput, bestExpression.trigger.ToLower(), config.charDelay);
+            }
             stopwatch.Stop();
             Svc.Log.Debug($"Done; elapsed: {stopwatch.ElapsedMilliseconds}ms");
             return solution;
         }
 
-        private static void assignResult(
-            bool match,
-            TriggerData candidate,
-            ref (long, string) emoteTuple,
-            ref (long, string) expressionTuple)
+        private bool CompareStrings(string text, string searchText, bool caseSensitive, bool exactMatch = true)
         {
-            if (!match) return;
-            emoteTuple = (candidate.emoteCommand.Length > 0 && candidate.calculatedPriority < emoteTuple.Item1) ?
-                                    (candidate.calculatedPriority, candidate.emoteCommand) :
-                                    emoteTuple;
-            expressionTuple = (candidate.expressionCommand.Length > 0 && candidate.calculatedPriority < expressionTuple.Item1) ?
-                (candidate.calculatedPriority, candidate.expressionCommand) :
-                expressionTuple;
+            if (!caseSensitive)
+            {
+                text = text.ToLower();
+                searchText = searchText.ToLower();
+            }
+
+            return exactMatch
+                ? text == searchText
+                : text.Contains(searchText);
+        }
+
+        private static int calculateDelay(string mainstring, string substring, int charDelay)
+        {
+            if (charDelay > 0)
+            {
+                return (mainstring.IndexOf(substring) + 1) * charDelay;
+            }
+            return 0;
         }
     }
 }

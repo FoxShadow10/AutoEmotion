@@ -114,4 +114,17 @@ public unsafe record EmoteIdentifier([property: JsonProperty("e")] uint EmoteID)
             return command;
         }
     }
+    public static EmoteIdentifier? Get(Character* character, bool loopEmote = false)
+    {
+        if (character == null) return null;
+        if (loopEmote)
+        {
+            if (character->Mode is not (CharacterModes.InPositionLoop or CharacterModes.EmoteLoop)) return null;
+        }
+        else
+        {
+            if (character->Mode is (CharacterModes.InPositionLoop or CharacterModes.EmoteLoop)) return null;
+        }
+        return new EmoteIdentifier(character->EmoteController.EmoteId);
+    }
 }
