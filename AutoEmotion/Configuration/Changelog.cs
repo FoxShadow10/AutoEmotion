@@ -11,7 +11,13 @@ namespace AutoEmotion.Configuration
         {
             return new Dictionary<string, string[]>()
                 {
-                                    {
+                    {
+                        "v2.0.2",
+                        [
+                            "Migrated to Dalamud.NET.Sdk"
+                        ]
+                    },
+                    {
                         "v2.0.1",
                         [
                             "API update to 12"
