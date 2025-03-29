@@ -3,7 +3,7 @@
     <Import Project="Dalamud.Plugin.Bootstrap.targets" />
 
     <PropertyGroup>
-        <TargetFramework>net8.0-windows</TargetFramework>
+        <TargetFramework>net9.0-windows</TargetFramework>
         <Copyright>Copyright © 2024</Copyright>
         <LangVersion>latest</LangVersion>
         <Version>0.1.0.0</Version>
@@ -57,6 +57,10 @@
         </Reference>
         <Reference Include="Serilog">
             <HintPath>$(DalamudLibPath)Serilog.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="InteropGenerator.Runtime">
+            <HintPath>$(DalamudLibPath)InteropGenerator.Runtime.dll</HintPath>
             <Private>False</Private>
         </Reference>
     </ItemGroup>

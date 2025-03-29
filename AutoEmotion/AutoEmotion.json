@@ -7,7 +7,7 @@
     "RepoUrl": "https://github.com/FoxShadow10/AutoEmotion",
     "ApplicableVersion": "any",
     "Tags": [ "Chat", "Emote", "RP" ],
-    "DalamudApiLevel": 11,
+    "DalamudApiLevel": 12,
     "LoadPriority": 90,
     "IconUrl": "https://raw.githubusercontent.com/FoxShadow10/AutoEmotion/main/AutoEmotion/images/plugin_icon.png",
     "AssemblyVersion" : "0.1.0.2"
