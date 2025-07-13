@@ -46,11 +46,6 @@ namespace AutoEmotion.ChatMessages
 
         public bool RecordAction(string userID, uint emoteID)
         {
-            if (!CanPerformAction(userID, emoteID))
-            {
-                return false;
-            }
-
             var now = DateTime.UtcNow;
             var userActions = cache.GetOrAdd(userID,
                 _ => new ConcurrentDictionary<uint, (DateTime, int)>());

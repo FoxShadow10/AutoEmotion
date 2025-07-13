@@ -12,6 +12,13 @@ namespace AutoEmotion.Configuration
             return new Dictionary<string, string[]>()
                 {
                     {
+                        "v2.1.0",
+                        [
+                            "New setting to define the maximum distance (in yalms) for automatic emote responses.",
+                            "Added the button Revert Change to restore all previously saved changes."
+                        ]
+                    },
+                    {
                         "v2.0.2",
                         [
                             "Migrated to Dalamud.NET.Sdk"

@@ -21,15 +21,20 @@ namespace AutoEmotion
         private void OnEmote(IPlayerCharacter playerCharacter, ushort emoteId)
         {
             if (!CanExecute()) return;
+            if (!playerCharacter.IsValid()) return;
+
             var playerName = playerCharacter.Name.TextValue;
-            Svc.Log.Debug($"OnEmote > Player {playerName} - Emote {emoteId}");
+            var homeWorldID = playerCharacter.HomeWorld.RowId;
+            var pos = playerCharacter.Position;
+
+            Svc.Log.Debug($"OnEmote > Player {playerName} - Emote {emoteId} - X: {pos.X} - Z: {pos.Z}");
 #if DEBUG
             if (true)
 #else
             if (playerName != ECommons.GameHelpers.Player.Name)
 #endif
             {
-                var world = Svc.Data.GetExcelSheet<World>()?.GetRow(playerCharacter.HomeWorld.RowId);
+                var world = Svc.Data.GetExcelSheet<World>()?.GetRow(homeWorldID);
                 if (world == null) return;
 
                 var key = playerName + "@" + world.Value.Name.ExtractText();
@@ -50,10 +55,18 @@ namespace AutoEmotion
                     }
                 }
                 if (reactions == null || !reactions.Any()) return;
-                if (reactionCache.RecordAction(key, emoteId))
+                if (reactionCache.CanPerformAction(key, emoteId))
                 {
                     foreach (var reaction in reactions)
                     {
+
+                        if (reaction.yalms > 0f)
+                        {
+                            float distance = CharacterUtility.CalculateDistanceFromCharacter(pos);
+                            Svc.Log.Information($"Distance: {distance}");
+                            if (distance > reaction.yalms) continue;
+                        }
+
                         try
                         {
                             var queueData = new QueueData();
@@ -61,8 +74,10 @@ namespace AutoEmotion
                             queueData.expression = reaction.responseExpressionCommand;
                             queueData.SetDelay(reaction.responseDelay);
                             queueData.targetBack = reaction.targetBack;
+                            if (!playerCharacter.IsValid()) return;
                             queueData.playerCharacter = playerCharacter;
                             messageQueue.Enqueue(queueData);
+                            reactionCache.RecordAction(key, emoteId);
                         }
                         catch (Exception e)
                         {

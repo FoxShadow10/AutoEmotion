@@ -187,6 +187,12 @@ namespace AutoEmotion
                     isOpenConfig = false;
                 }
                 ImGui.SameLine();
+                if (ImGui.Button("Revert Change"))
+                {
+                    LoadConfig();
+                    InitializeGui();
+                }
+                ImGui.SameLine();
                 KoFiButton.DrawRight();
 
                 ImGui.End();

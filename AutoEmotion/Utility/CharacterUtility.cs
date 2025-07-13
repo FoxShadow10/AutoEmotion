@@ -1,7 +1,9 @@
 using Dalamud.Game.ClientState.Conditions;
 using ECommons.DalamudServices;
+using ECommons.ExcelServices.TerritoryEnumeration;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
+using System;
 
 namespace AutoEmotion.Utility
 {
@@ -33,7 +35,8 @@ namespace AutoEmotion.Utility
                //|| Svc.Condition[ConditionFlag.InThatPosition]
                || Svc.Condition[ConditionFlag.TradeOpen]
                || Svc.Condition[ConditionFlag.Crafting]
-               || Svc.Condition[ConditionFlag.Crafting40]
+               || Svc.Condition[ConditionFlag.ExecutingCraftingAction]
+               || Svc.Condition[ConditionFlag.ExecutingGatheringAction]
                || Svc.Condition[ConditionFlag.PreparingToCraft]
                || Svc.Condition[ConditionFlag.Unconscious]
                || Svc.Condition[ConditionFlag.MeldingMateria]
@@ -82,11 +85,25 @@ namespace AutoEmotion.Utility
 
         public static unsafe void SetRotation(float p)
         {
-            if (Svc.ClientState.LocalPlayer != null)
+            if (Svc.ClientState.LocalPlayer != null && Svc.ClientState.LocalPlayer.IsValid())
             {
                 var playerAddress = (GameObject*)Svc.ClientState.LocalPlayer.Address;
                 playerAddress->SetRotation(p);
             }
+        }
+
+        public static float CalculateDistanceFromCharacter(System.Numerics.Vector3 targetPos)
+        {
+            if (Svc.ClientState.LocalPlayer != null && Svc.ClientState.LocalPlayer.IsValid())
+            {
+                var charPos = Svc.ClientState.LocalPlayer.Position;
+                float distance = (float)Math.Sqrt(Math.Pow((targetPos.X - charPos.X), 2) + Math.Pow((targetPos.Z - charPos.Z), 2));
+                return (float)Math.Round(distance, 3);
+            }
+            else
+            {
+                return 0;
+            }             
         }
     }
 }

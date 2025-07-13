@@ -14,6 +14,7 @@ namespace AutoEmotion.Configuration.Data
         public bool targetBack = false;
         public int priority = 0;
         public long calculatedPriority = 0;
+        public float yalms = 0f;
         public void CopyValue(ReactionData value)
         {
             isLocked = value.isLocked;
@@ -26,6 +27,7 @@ namespace AutoEmotion.Configuration.Data
             targetBack = value.targetBack;
             priority = value.priority;
             calculatedPriority = value.calculatedPriority;
+            yalms = value.yalms;
         }
     }
 }

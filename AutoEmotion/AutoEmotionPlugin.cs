@@ -39,9 +39,7 @@ public partial class AutoEmotionPlugin : IDalamudPlugin
     {
         ECommonsMain.Init(pluginInterface, this);
 
-        configGUI = Svc.PluginInterface.GetPluginConfig() as AutoEmotionConfig ?? new AutoEmotionConfig();
-        configGUI.Initialize(Svc.PluginInterface);
-        InitializeConfig();
+        LoadConfig();
         InitializeGui();
         AddHandler();
 
@@ -65,6 +63,13 @@ public partial class AutoEmotionPlugin : IDalamudPlugin
         Svc.ClientState.Logout += ClientState_Logout;
     }
 
+    private void LoadConfig()
+    {
+        configGUI = Svc.PluginInterface.GetPluginConfig() as AutoEmotionConfig ?? new AutoEmotionConfig();
+        configGUI.Initialize(Svc.PluginInterface);
+        InitializeConfig();
+
+    }
     private void InitializeConfig()
     {
         config = Svc.PluginInterface.GetPluginConfig() as AutoEmotionConfig ?? new AutoEmotionConfig();

@@ -47,7 +47,7 @@ namespace AutoEmotion
             configGUI.whiteList.TryGetValue(AutoEmotionConfig.EveryoneKey, out selectedCharacter);
         }
 
-        private static void TableHeaderRow(string ID, params TableHeaderAlign[] aligns)
+        private static void TableHeaderRow(string ID, string[] infoMarker, params TableHeaderAlign[] aligns)
         {
             ImGui.TableNextRow();
             for (var i = 0; i < ImGui.TableGetColumnCount(); i++)
@@ -82,6 +82,11 @@ namespace AutoEmotion
                         break;
                 }
                 ImGui.PopID();
+                if (infoMarker[i].Length > 0)
+                {
+                    ImGui.SameLine(ImGui.GetContentRegionAvail().X - (19f * ImGuiHelpers.GlobalScale));
+                    ImGuiEx.InfoMarker(infoMarker[i], null, null, false);
+                }
             }
         }
 
@@ -107,7 +112,7 @@ namespace AutoEmotion
 
         public void DrawDragInt(string label, ref int v, int v_speed, float item_width = 120, int v_min = 0, int v_max = 0)
         {
-            string[] text = label.Split(new string[] { "##" }, StringSplitOptions.None);
+            string[] text = label.Split(["##"], StringSplitOptions.None);
             float buttonSize = 0f;
             if (configGUI.showPlusMinus == true)
             {
@@ -115,6 +120,44 @@ namespace AutoEmotion
             }
             ImGui.SetNextItemWidth(item_width - buttonSize);
             ImGui.DragInt($"##{text[1]}", ref v, v_speed, v_min, v_max);
+            if (configGUI.showPlusMinus == true)
+            {
+                using (ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, Vector2.One * ImGuiHelpers.GlobalScale))
+                {
+                    using (ImRaii.PushFont(UiBuilder.IconFont))
+                    {
+                        ImGui.PushID($"buttons_{text[1]}");
+                        ImGui.SameLine();
+                        if (ImGui.Button($"{(char)FontAwesomeIcon.Plus}", new Vector2(chkSize)))
+                        {
+                            v = (v_min == 0 && v_max == 0) ? v + v_speed : Math.Min(v_max, v + v_speed);
+                        }
+                        ImGui.SameLine();
+                        if (ImGui.Button($"{(char)FontAwesomeIcon.Minus}", new Vector2(chkSize)))
+                        {
+                            v = (v_min == 0 && v_max == 0) ? v - v_speed : Math.Max(v_min, v - v_speed);
+                        }
+                        ImGui.PopID();
+                    }
+                }
+            }
+            if (!string.IsNullOrEmpty(text[0]))
+            {
+                ImGui.SameLine();
+                ImGui.Text(text[0]);
+            }
+        }
+
+        public void DrawDragFloat(string label, ref float v, float v_speed, float item_width = 120, float v_min = 0, float v_max = 0)
+        {
+            string[] text = label.Split(["##"], StringSplitOptions.None);
+            float buttonSize = 0f;
+            if (configGUI.showPlusMinus == true)
+            {
+                buttonSize = ((chkSize * 2f) + 1f);
+            }
+            ImGui.SetNextItemWidth(item_width - buttonSize);
+            ImGui.DragFloat($"##{text[1]}", ref v, v_speed, v_min, v_max);
             if (configGUI.showPlusMinus == true)
             {
                 using (ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, Vector2.One * ImGuiHelpers.GlobalScale))
@@ -268,8 +311,16 @@ namespace AutoEmotion
                     ImGui.TableSetupColumn("Contained", ImGuiTableColumnFlags.WidthFixed, 80f * ImGuiHelpers.GlobalScale);
                     ImGui.TableSetupColumn("Case Sensitive", ImGuiTableColumnFlags.WidthFixed, 80f * ImGuiHelpers.GlobalScale);
                     ImGui.TableSetupColumn("Priority", ImGuiTableColumnFlags.WidthFixed, ImGui.GetContentRegionAvail().X);
-                    TableHeaderRow("TriggerTable", TableHeaderAlign.Left, TableHeaderAlign.Left, TableHeaderAlign.Left, TableHeaderAlign.Left, TableHeaderAlign.Center, TableHeaderAlign.Center, TableHeaderAlign.Center);
-                    ImGuiEx.InfoMarker("The keyword with the lowest priority will take precedence if multiple applicable triggers are found in a chat message.");
+                    string[] infoMarkers = {
+                             ""
+                            ,""
+                            ,""
+                            ,""
+                            ,""
+                            ,""
+                            ,"The keyword with the lowest priority will take precedence if multiple applicable triggers are found in a chat message."
+                    };
+                    TableHeaderRow("TriggerTable", infoMarkers, TableHeaderAlign.Left, TableHeaderAlign.Left, TableHeaderAlign.Left, TableHeaderAlign.Left, TableHeaderAlign.Center, TableHeaderAlign.Center, TableHeaderAlign.Center);
 
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
@@ -741,18 +792,28 @@ namespace AutoEmotion
                     copyCharacterReaction = new();
                 }
 
-                if (ImGui.BeginTable("HeaderReactionTable", 7))
+                if (ImGui.BeginTable("HeaderReactionTable", 8))
                 {
                     ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, chkSize * 3f + 3f * ImGuiHelpers.GlobalScale);
                     ImGui.TableSetupColumn("Received Emote", ImGuiTableColumnFlags.WidthFixed, (chkSize + 150f) * ImGuiHelpers.GlobalScale);
                     ImGui.TableSetupColumn("Response Emote", ImGuiTableColumnFlags.WidthFixed, (chkSize + 150f) * ImGuiHelpers.GlobalScale);
                     ImGui.TableSetupColumn("Response Expression", ImGuiTableColumnFlags.WidthFixed, (chkSize + 150f) * ImGuiHelpers.GlobalScale);
+                    ImGui.TableSetupColumn("Distance (yalms)", ImGuiTableColumnFlags.WidthFixed, 120f * ImGuiHelpers.GlobalScale);
                     ImGui.TableSetupColumn("Response Delay (ms)", ImGuiTableColumnFlags.WidthFixed, 120f * ImGuiHelpers.GlobalScale);
                     ImGui.TableSetupColumn("Target Back", ImGuiTableColumnFlags.WidthFixed, 80f * ImGuiHelpers.GlobalScale);
                     ImGui.TableSetupColumn("Priority", ImGuiTableColumnFlags.WidthFixed, ImGui.GetContentRegionAvail().X);
-                    TableHeaderRow("ReactionTable", TableHeaderAlign.Left, TableHeaderAlign.Left, TableHeaderAlign.Left, TableHeaderAlign.Left,
-                        TableHeaderAlign.Left, TableHeaderAlign.Center, TableHeaderAlign.Center);
-                    ImGuiEx.InfoMarker("The reaction with the lowest priority will take precedence if multiple applicable reaction are found.");
+                    string[] infoMarkers = {
+                             ""
+                            ,""
+                            ,""
+                            ,""
+                            ,"Sets the distance (in yalms) at which you'll respond to incoming emotes.\r\n0 means unlimited range.\r\nNote: This setting is highly affected by server latency and may not always be accurate."
+                            ,""
+                            ,""
+                            ,"The reaction with the lowest priority will take precedence if multiple applicable reaction are found."
+                    };
+                    TableHeaderRow("ReactionTable", infoMarkers, TableHeaderAlign.Left, TableHeaderAlign.Left, TableHeaderAlign.Left, TableHeaderAlign.Left,
+                        TableHeaderAlign.Left, TableHeaderAlign.Center, TableHeaderAlign.Center, TableHeaderAlign.Center);
 
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
@@ -779,6 +840,9 @@ namespace AutoEmotion
                     DrawComboEmote("newResponseExpression", newReactionData.responseExpressionID, true, ref newReactionData.responseExpressionID, ref newReactionData.responseExpressionCommand);
 
                     ImGui.TableNextColumn();
+                    DrawDragFloat("##newYalms", ref newReactionData.yalms, 0.500f, ImGui.GetContentRegionAvail().X, 0, 500);
+
+                    ImGui.TableNextColumn();
                     DrawDragInt("##newDelay", ref newReactionData.responseDelay, 100, ImGui.GetContentRegionAvail().X);
 
                     ImGui.TableNextColumn();
@@ -799,12 +863,13 @@ namespace AutoEmotion
                         ImGui.Text($"No reactions are configured for {selectedCharacter.name}.{Environment.NewLine}Reactions set for Everyone will be used if available.");
                 }
 
-                if (ImGui.BeginTable("RowsReceivedTable", 7, ImGuiTableFlags.ScrollY))
+                if (ImGui.BeginTable("RowsReceivedTable", 8, ImGuiTableFlags.ScrollY))
                 {
                     ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, chkSize * 3f + 3f * ImGuiHelpers.GlobalScale);//Buttons
                     ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, (chkSize + 150f) * ImGuiHelpers.GlobalScale);//Received Emote
                     ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, (chkSize + 150f) * ImGuiHelpers.GlobalScale);//Response Emote
                     ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, (chkSize + 150f) * ImGuiHelpers.GlobalScale);//Response Expression
+                    ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, 120f * ImGuiHelpers.GlobalScale);//Distance (yalms)
                     ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, 120f * ImGuiHelpers.GlobalScale);//Response Delay (ms)
                     ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, 80f * ImGuiHelpers.GlobalScale);//Target Back
                     ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, ImGui.GetContentRegionAvail().X);//Priority
@@ -887,6 +952,9 @@ namespace AutoEmotion
 
                         ImGui.TableNextColumn();
                         DrawComboEmote("rowResponseExpression", reactionData.responseExpressionID, true, ref reactionData.responseExpressionID, ref reactionData.responseExpressionCommand);
+
+                        ImGui.TableNextColumn();
+                        DrawDragFloat("##rowYalms", ref reactionData.yalms, 0.500f, ImGui.GetContentRegionAvail().X, 0, 500);
 
                         ImGui.TableNextColumn();
                         DrawDragInt("##rowDelay", ref reactionData.responseDelay, 100, ImGui.GetContentRegionAvail().X);
