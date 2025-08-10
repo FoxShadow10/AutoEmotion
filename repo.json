@@ -5,7 +5,7 @@
     "Punchline": "Auto-execute configured emotes as you chat!",
     "Description": "This plugin lets you assign a keyword to an emote. When the keyword is typed in the chat, the corresponding emote is automatically triggered.\n\nThe plugin icon was created by https://twitter.com/AlcielCroix",
     "InternalName": "AutoEmotion",
-    "AssemblyVersion": "2.0.3",
+    "AssemblyVersion": "2.1.0",
     "ApplicableVersion": "any",
     "Tags": [
       "Chat",
@@ -20,7 +20,7 @@
     "IsTestingExclusive": "False",
     "DownloadCount": 1,
     "LastUpdate": 1618608322,
-    "DownloadLinkInstall": "https://github.com/FoxShadow10/AutoEmotion/releases/download/2.0.3/AutoEmotion.zip",
-    "DownloadLinkUpdate": "https://github.com/FoxShadow10/AutoEmotion/releases/download/2.0.3/AutoEmotion.zip"
+    "DownloadLinkInstall": "https://github.com/FoxShadow10/AutoEmotion/releases/download/2.1.0/AutoEmotion.zip",
+    "DownloadLinkUpdate": "https://github.com/FoxShadow10/AutoEmotion/releases/download/2.1.0/AutoEmotion.zip"
   }
 ]
