@@ -1,7 +1,7 @@
 using Dalamud.Interface.Utility;
 using Dalamud.Interface;
 using ECommons.DalamudServices;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 using Dalamud.Plugin;
 using FFXIVClientStructs.FFXIV.Common.Math;
@@ -13,6 +13,7 @@ using Dalamud.Interface.Utility.Raii;
 using System.Collections.Generic;
 using System.Linq;
 using Dalamud.Game.Text;
+using Dalamud.Plugin.Services;
 
 namespace AutoEmotion
 {
@@ -203,8 +204,8 @@ namespace AutoEmotion
                 if (ImGui.BeginChildFrame(ImGui.GetID($"iconTextFrame_{previewIcon}_{previewText}"), frameSize))
                 {
                     var drawlist = ImGui.GetWindowDrawList();
-                    var icon = Svc.Texture.GetFromGameIcon(previewIcon).GetWrapOrEmpty();
-                    if (icon != null) drawlist.AddImage(icon.ImGuiHandle, pos, pos + new Num.Vector2(size.Y));
+                    var icon = Svc.Texture.GetFromGameIcon(previewIcon).GetWrapOrDefault();
+                    if (icon != null) drawlist.AddImage(icon.Handle, pos, pos + new Num.Vector2(size.Y));
                     var textSize = ImGui.CalcTextSize(previewText);
                     drawlist.AddText(pos + new Num.Vector2(size.Y + ImGui.GetStyle().FramePadding.X, size.Y / 2f - textSize.Y / 2f), ImGui.GetColorU32(ImGuiCol.Text), previewText);
                 }
@@ -219,7 +220,7 @@ namespace AutoEmotion
             {
                 if (ThreadLoadImageHandler.TryGetIconTextureWrap(EmoteIdentifier.FetchIcon(previewID), false, out var iconPicture))
                 {
-                    ImGui.Image(iconPicture.ImGuiHandle, new(chkSize));
+                    ImGui.Image(iconPicture.Handle, new(chkSize));
                 }
                 ImGui.SameLine();
                 ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
@@ -1035,7 +1036,7 @@ namespace AutoEmotion
                         ThreadLoadImageHandler.TryGetIconTextureWrap(40, false, out var chatImg);//45
                         if (chatImg != null)
                         {
-                            ImGui.Image(chatImg.ImGuiHandle, new(chkSize));
+                            ImGui.Image(chatImg.Handle, new(chkSize));
                             if (ImGui.IsItemHovered())
                             {
                                 ImGui.SetTooltip("Chat Reactions are enabled.");
@@ -1052,7 +1053,7 @@ namespace AutoEmotion
                         ThreadLoadImageHandler.TryGetIconTextureWrap(9, false, out var reactionImg);
                         if (reactionImg != null)
                         {
-                            ImGui.Image(reactionImg.ImGuiHandle, new(chkSize));
+                            ImGui.Image(reactionImg.Handle, new(chkSize));
                             if (ImGui.IsItemHovered())
                             {
                                 ImGui.SetTooltip("Emote Reactions are enabled.");

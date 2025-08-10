@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using FFXIVClientStructs.FFXIV.Common.Math;
 using Dalamud.Interface.Utility.Raii;
 
@@ -11,6 +11,12 @@ namespace AutoEmotion.Configuration
         {
             return new Dictionary<string, string[]>()
                 {
+                    {
+                        "v2.1.1",
+                        [
+                            "API update to 13"
+                        ]
+                    },
                     {
                         "v2.1.0",
                         [

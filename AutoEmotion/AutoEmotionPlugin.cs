@@ -96,7 +96,7 @@ public partial class AutoEmotionPlugin : IDalamudPlugin
                         {
                             messageProcess.TargetBack();
                             var expression = messageProcess.GetExpression(config.isChatLogHidden);
-                            Chat.Instance.ExecuteCommand(expression);
+                            Chat.ExecuteCommand(expression);
                             Svc.Log.Debug($"Expressione: {expression}");
                             messageProcess.expression = string.Empty;
                             messageProcess.SetDelay(messageProcess.delay + messageProcess.minDelay);
@@ -127,7 +127,7 @@ public partial class AutoEmotionPlugin : IDalamudPlugin
                             }
                             messageProcess.TargetBack();
                             var emote = messageProcess.GetEmote(config.isChatLogHidden);
-                            Chat.Instance.ExecuteCommand(emote);
+                            Chat.ExecuteCommand(emote);
                             Svc.Log.Debug($"Emote: {emote}");
                             messageProcess.emote = string.Empty;
                             return;
@@ -144,7 +144,7 @@ public partial class AutoEmotionPlugin : IDalamudPlugin
                         {
                             if (config.resumeEmoteDetarget) Svc.Targets.Target = null;
                             var emote = messageProcessResume.GetEmote(config.isChatLogHidden);
-                            Chat.Instance.ExecuteCommand(emote);
+                            Chat.ExecuteCommand(emote);
                             if (config.resumeEmoteRestoreRotation)
                             {
                                 CharacterUtility.SetRotation(messageProcessResume.rotation);

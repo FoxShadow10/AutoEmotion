@@ -12,7 +12,7 @@
       "Emote",
       "RP"
     ],
-    "DalamudApiLevel": 12,
+    "DalamudApiLevel": 13,
     "LoadPriority": 90,
     "IconUrl": "https://raw.githubusercontent.com/FoxShadow10/AutoEmotion/main/AutoEmotion/images/plugin_icon.png",
     "RepoUrl": "https://github.com/FoxShadow10/AutoEmotion",

@@ -1,6 +1,6 @@
 using Dalamud.Interface.Utility;
 using Dalamud.Plugin;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Num = System.Numerics;
 using FFXIVClientStructs.FFXIV.Common.Math;
 using AutoEmotion.Utility;

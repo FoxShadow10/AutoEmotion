@@ -1,6 +1,6 @@
 using Dalamud.Interface.Utility;
 using ECommons;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 
 namespace AutoEmotion.Utility;
@@ -43,7 +43,7 @@ public static class KoFiButton
         var spaceWidth = ImGui.CalcTextSize(" ").X;
         ImGui.BeginDisabled();
         ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0f);
-        if (ECommons.ImGuiMethods.ImGuiEx.BeginTabItem(" ".Repeat((int)MathF.Ceiling(textWidth / spaceWidth)), ImGuiTabItemFlags.Trailing))
+        if (ImGui.BeginTabItem(" ".Repeat((int)MathF.Ceiling(textWidth / spaceWidth)), ImGuiTabItemFlags.Trailing))
         {
             ImGui.EndTabItem();
         }
