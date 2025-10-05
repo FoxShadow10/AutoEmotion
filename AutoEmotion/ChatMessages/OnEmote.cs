@@ -11,16 +11,21 @@ namespace AutoEmotion
 {
     public partial class AutoEmotionPlugin : IDalamudPlugin
     {
-        private bool CanExecute()
+        private bool isReactionActive()
         {
             if (!config.isActived) return false;
             if (!config.isReactionActive) return false;
+            return true;
+        }
+        private bool CanExecuteReaction()
+        {
             if (!CharacterUtility.IsCharacterAvailable(config)) return false;
             return true;
         }
         private void OnEmote(IPlayerCharacter playerCharacter, ushort emoteId)
         {
-            if (!CanExecute()) return;
+            if (!isReactionActive()) return;
+            if (!CanExecuteReaction()) return;
             if (!playerCharacter.IsValid()) return;
 
             var playerName = playerCharacter.Name.TextValue;
@@ -63,7 +68,7 @@ namespace AutoEmotion
                         if (reaction.yalms > 0f)
                         {
                             float distance = CharacterUtility.CalculateDistanceFromCharacter(pos);
-                            Svc.Log.Information($"Distance: {distance}");
+                            Svc.Log.Debug($"Distance: {distance}");
                             if (distance > reaction.yalms) continue;
                         }
 

@@ -12,6 +12,12 @@ namespace AutoEmotion.Configuration
             return new Dictionary<string, string[]>()
                 {
                     {
+                        "v2.1.2",
+                        [
+                            "Changed the log level from Information to Debug."
+                        ]
+                    },
+                    {
                         "v2.1.1",
                         [
                             "API update to 13"

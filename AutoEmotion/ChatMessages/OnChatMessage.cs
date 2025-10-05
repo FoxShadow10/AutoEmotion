@@ -30,23 +30,24 @@ namespace AutoEmotion
 
             return result;
         }
-        private bool CanExecute(XivChatType type)
+
+        private bool isChatActive(XivChatType type)
         {
             if (!config.isActived) return false;
             if (!config.isChatActive) return false;
-            if (config.triggerLists.Count <= 0)
-            {
-                Svc.Log.Information("No triggers set; nothing will happen.");
-                return false;
-            };
             if (!config.allowedChannels.Contains(type)) return false;
+            return true;
+        }
+        private bool CanExecuteChat()
+        {
+            if (config.triggerLists.Count <= 0) return false;
             if (!CharacterUtility.IsCharacterAvailable(config)) return false;
             return true;
         }
         private void ChatMessage(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool isHandled)
         {
             if (isHandled) return;
-            if (!CanExecute(type)) return;
+            if (!isChatActive(type)) return;
 
             var senderSanitized = sender.TextValue;
 
@@ -57,6 +58,7 @@ namespace AutoEmotion
 
             if ((senderSanitized == ECommons.GameHelpers.Player.Name) || (type == XivChatType.TellOutgoing))
             {
+                if (!CanExecuteChat()) return;
                 var result = messageParser(message);
                 try
                 {

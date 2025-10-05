@@ -599,7 +599,7 @@ namespace AutoEmotion
                     if (triggerArray.Any(v => v.trigger == newTrigger))
                     {
                         isExists = true;
-                        Svc.Log.Information("Matched more than once for {0}", newTrigger);
+                        Svc.Log.Debug("Matched more than once for {0}", newTrigger);
                     }
                 }
                 else
@@ -607,7 +607,7 @@ namespace AutoEmotion
                     if (triggerArray.Exists(v => v.trigger == newTrigger))
                     {
                         isExists = true;
-                        Svc.Log.Information("Trigger {0} exists", newTrigger);
+                        Svc.Log.Debug("Trigger {0} exists", newTrigger);
                     }
                 }
 
