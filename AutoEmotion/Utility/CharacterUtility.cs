@@ -56,15 +56,15 @@ namespace AutoEmotion.Utility
                || Svc.Condition[ConditionFlag.Fishing]
                || Svc.Condition[ConditionFlag.Transformed]
                || Svc.Condition[ConditionFlag.UsingHousingFunctions]
-               || Svc.ClientState.LocalPlayer?.IsTargetable != true
+               || Svc.Objects.LocalPlayer?.IsTargetable != true
                 ) return false;
             if (Svc.ClientState.IsGPosing) return false;
             if (Svc.ClientState.IsPvP) return false;
             if (!config.executeReactionWhileBusyAfk)
             {
-                if (Svc.ClientState.LocalPlayer != null && Svc.ClientState.LocalPlayer.OnlineStatus.IsValid)
+                if (Svc.Objects.LocalPlayer != null && Svc.Objects.LocalPlayer.OnlineStatus.IsValid)
                 {
-                    var playerStatus = (OnlineStatus)Svc.ClientState.LocalPlayer.OnlineStatus.RowId;
+                    var playerStatus = (OnlineStatus)Svc.Objects.LocalPlayer.OnlineStatus.RowId;
                     if (playerStatus == OnlineStatus.Busy || playerStatus == OnlineStatus.AwayFromKeyboard) return false;
                 }
             }
@@ -73,8 +73,8 @@ namespace AutoEmotion.Utility
 
         public static unsafe EmoteIdentifier? GetCurrentEmote(bool loopEmote = false)
         {
-            if (Svc.ClientState.LocalPlayer == null) return null;
-            var playerAddress = (GameObject*)Svc.ClientState.LocalPlayer.Address;
+            if (Svc.Objects.LocalPlayer == null) return null;
+            var playerAddress = (GameObject*)Svc.Objects.LocalPlayer.Address;
             var player = (Character*)playerAddress;
             if (player != null)
             {
@@ -85,18 +85,18 @@ namespace AutoEmotion.Utility
 
         public static unsafe void SetRotation(float p)
         {
-            if (Svc.ClientState.LocalPlayer != null && Svc.ClientState.LocalPlayer.IsValid())
+            if (Svc.Objects.LocalPlayer != null && Svc.Objects.LocalPlayer.IsValid())
             {
-                var playerAddress = (GameObject*)Svc.ClientState.LocalPlayer.Address;
+                var playerAddress = (GameObject*)Svc.Objects.LocalPlayer.Address;
                 playerAddress->SetRotation(p);
             }
         }
 
         public static float CalculateDistanceFromCharacter(System.Numerics.Vector3 targetPos)
         {
-            if (Svc.ClientState.LocalPlayer != null && Svc.ClientState.LocalPlayer.IsValid())
+            if (Svc.Objects.LocalPlayer != null && Svc.Objects.LocalPlayer.IsValid())
             {
-                var charPos = Svc.ClientState.LocalPlayer.Position;
+                var charPos = Svc.Objects.LocalPlayer.Position;
                 float distance = (float)Math.Sqrt(Math.Pow((targetPos.X - charPos.X), 2) + Math.Pow((targetPos.Z - charPos.Z), 2));
                 return (float)Math.Round(distance, 3);
             }

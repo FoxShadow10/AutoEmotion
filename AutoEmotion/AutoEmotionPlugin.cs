@@ -115,9 +115,9 @@ public partial class AutoEmotionPlugin : IDalamudPlugin
                                         {
                                             var queueData = new QueueData() { emote = currentEmote.EmoteCommand };
                                             queueData.SetDelay(config.resumeEmoteDelay);
-                                            if (Svc.ClientState.LocalPlayer != null)
+                                            if (Svc.Objects.LocalPlayer != null)
                                             {
-                                                queueData.rotation = Svc.ClientState.LocalPlayer.Rotation;
+                                                queueData.rotation = Svc.Objects.LocalPlayer.Rotation;
                                             }
                                             messageQueueResume.Enqueue(queueData);
                                             Svc.Log.Debug($"Enqueue resume Emote: {queueData.emote} with delay {queueData.delay}ms");

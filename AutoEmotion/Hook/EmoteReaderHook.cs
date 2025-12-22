@@ -31,9 +31,9 @@ namespace AutoEmotion.Hooks
             // unk - some field of event framework singleton? doesn't matter here anyway
             //PluginServices.PluginLog.Info($"Emote >> unk:{unk:X}, instigatorAddr:{instigatorAddr:X}, emoteId:{emoteId}, targetId:{targetId:X}, unk2:{unk2:X}");
 
-            if (Svc.ClientState.LocalPlayer != null)
+            if (Svc.Objects.LocalPlayer != null)
             {
-                if (targetId == Svc.ClientState.LocalPlayer.GameObjectId)
+                if (targetId == Svc.Objects.LocalPlayer.GameObjectId)
                 {
                     var instigatorOb = Svc.Objects.FirstOrDefault(x => (ulong)x.Address == instigatorAddr);
                     if (instigatorOb != null && instigatorOb is IPlayerCharacter playerCharacter)
