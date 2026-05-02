@@ -186,7 +186,7 @@ namespace AutoEmotion
             if (!bestEmote.trigger.IsNullOrEmpty())
             {
                 solution.Item1.Item1 = bestEmote.emoteCommand;
-                solution.Item2.Item2 = calculateDelay(lowerInput, bestExpression.trigger.ToLower(), config.charDelay);
+                solution.Item1.Item2 = calculateDelay(lowerInput, bestEmote.trigger.ToLower(), config.charDelay);
             }
             if (!bestExpression.trigger.IsNullOrEmpty())
             {
