@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using Dalamud.Game.Chat;
 
 namespace AutoEmotion
 {
@@ -44,22 +45,22 @@ namespace AutoEmotion
             if (!CharacterUtility.IsCharacterAvailable(config)) return false;
             return true;
         }
-        private void ChatMessage(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool isHandled)
+        private void ChatMessage(IHandleableChatMessage message)
         {
-            if (isHandled) return;
-            if (!isChatActive(type)) return;
+            if (message.IsHandled) return;
+            if (!isChatActive(message.LogKind)) return;
 
-            var senderSanitized = sender.TextValue;
+            var senderSanitized = message.Sender.TextValue;
 
-            if ((type == XivChatType.Party) || (type == XivChatType.Alliance))
+            if (message.LogKind is XivChatType.Party or XivChatType.Alliance)
             {
                 foreach (var c in toRemove) { senderSanitized = senderSanitized.Replace(c.ToString(), string.Empty); }
             }
 
-            if ((senderSanitized == ECommons.GameHelpers.Player.Name) || (type == XivChatType.TellOutgoing))
+            if ((senderSanitized == ECommons.GameHelpers.Player.Name) || (message.LogKind == XivChatType.TellOutgoing))
             {
                 if (!CanExecuteChat()) return;
-                var result = messageParser(message);
+                var result = messageParser(message.Message);
                 try
                 {
                     if (result.emote.command.IsNullOrEmpty() && result.expression.command.IsNullOrEmpty()) return;

@@ -1,48 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Dalamud.NET.Sdk/12.0.2">
-
+<Project Sdk="Dalamud.NET.Sdk/15.0.0">
     <PropertyGroup>
-        <TargetFramework>net10.0-windows</TargetFramework>
-        <Copyright>Copyright © 2024</Copyright>
+        <Copyright>Copyright © 2026</Copyright>
         <LangVersion>latest</LangVersion>
-        <Version>0.1.0.0</Version>
-        <Nullable>enable</Nullable>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <Deterministic>true</Deterministic>
+        <Version>2.1.4</Version>
         <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
-        <UseWindowsForms>true</UseWindowsForms>
+        <IsPackable>false</IsPackable>
+        <RootNamespace>AutoEmotion</RootNamespace>
     </PropertyGroup>
-
-    <ItemGroup>
-        <Reference Include="FFXIVClientStructs">
-            <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Dalamud.Bindings.ImGui">
-            <HintPath>$(DalamudLibPath)Dalamud.Bindings.ImGui.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Dalamud.Bindings.ImPlot">
-            <HintPath>$(DalamudLibPath)Dalamud.Bindings.ImPlot.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Dalamud.Bindings.ImGuizmo">
-            <HintPath>$(DalamudLibPath)Dalamud.Bindings.ImGuizmo.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="JetBrains.Annotations">
-            <HintPath>$(DalamudLibPath)\JetBrains.Annotations.dll</HintPath>
-            <Private>false</Private>
-        </Reference>
-        <Reference Include="Serilog">
-            <HintPath>$(DalamudLibPath)Serilog.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="InteropGenerator.Runtime">
-            <HintPath>$(DalamudLibPath)InteropGenerator.Runtime.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-    </ItemGroup>
 
     <ItemGroup>
         <None Update="AutoEmotion.json">
@@ -52,10 +17,5 @@
 
     <ItemGroup>
         <ProjectReference Include="..\ECommons\ECommons\ECommons.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Update="DalamudPackager" Version="14.0.1" />
-      <PackageReference Update="DotNet.ReproducibleBuilds" Version="1.2.39" />
     </ItemGroup>
 </Project>
