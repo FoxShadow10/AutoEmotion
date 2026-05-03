@@ -1,19 +1,20 @@
-using Dalamud.Interface.Utility;
-using Dalamud.Interface;
-using ECommons.DalamudServices;
-using Dalamud.Bindings.ImGui;
-using System;
-using Dalamud.Plugin;
-using FFXIVClientStructs.FFXIV.Common.Math;
-using Num = System.Numerics;
 using AutoEmotion.Configuration.Data;
-using ECommons.ImGuiMethods;
 using AutoEmotion.Utility;
+using Dalamud.Bindings.ImGui;
+using Dalamud.Game.Text;
+using Dalamud.Interface;
+using Dalamud.Interface.Textures.TextureWraps;
+using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
+using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
+using ECommons.DalamudServices;
+using ECommons.ImGuiMethods;
+using FFXIVClientStructs.FFXIV.Common.Math;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Dalamud.Game.Text;
-using Dalamud.Plugin.Services;
+using Num = System.Numerics;
 
 namespace AutoEmotion
 {
@@ -204,7 +205,15 @@ namespace AutoEmotion
                 if (ImGui.BeginChildFrame(ImGui.GetID($"iconTextFrame_{previewIcon}_{previewText}"), frameSize))
                 {
                     var drawlist = ImGui.GetWindowDrawList();
-                    var icon = Svc.Texture.GetFromGameIcon(previewIcon).GetWrapOrDefault();
+                    IDalamudTextureWrap? icon = null;
+                    if (previewIcon != 0)
+                    {
+                        try
+                        {
+                            icon = Svc.Texture.GetFromGameIcon(previewIcon).GetWrapOrDefault();
+                        }
+                        catch { }
+                    }
                     if (icon != null) drawlist.AddImage(icon.Handle, pos, pos + new Num.Vector2(size.Y));
                     var textSize = ImGui.CalcTextSize(previewText);
                     drawlist.AddText(pos + new Num.Vector2(size.Y + ImGui.GetStyle().FramePadding.X, size.Y / 2f - textSize.Y / 2f), ImGui.GetColorU32(ImGuiCol.Text), previewText);
@@ -279,22 +288,22 @@ namespace AutoEmotion
 
         private void DrawChannelList()
         {
-            var i = 0;
             ImGui.Columns(2);
+
             foreach (var e in (XivChatType[])Enum.GetValues(typeof(XivChatType)))
             {
-                if (configGUI.visibleChannels[i])
+                if (!configGUI.visibleChannelsDictionary.TryGetValue(e, out var visible) || !visible)
+                    continue;
+
+                var enabled = configGUI.allowedChannels.Contains(e);
+                if (ImGui.Checkbox($"{e}", ref enabled))
                 {
-                    var enabled = configGUI.allowedChannels.Contains(e);
-                    if (ImGui.Checkbox($"{e}", ref enabled))
-                    {
-                        if (enabled) configGUI.allowedChannels.Add(e);
-                        else configGUI.allowedChannels.Remove(e);
-                    }
-                    ImGui.NextColumn();
+                    if (enabled) configGUI.allowedChannels.Add(e);
+                    else configGUI.allowedChannels.Remove(e);
                 }
-                i++;
+                ImGui.NextColumn();
             }
+
             ImGui.Columns(1);
         }
 

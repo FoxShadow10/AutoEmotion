@@ -59,9 +59,13 @@ public unsafe record EmoteIdentifier([property: JsonProperty("e")] uint EmoteID)
 
     public static uint FetchIcon(uint emoteID)
     {
-        var emote = Svc.Data.GetExcelSheet<Emote>()?.GetRow(emoteID);
-        if (emote == null) return 0;
-        return emote.Value.Icon;
+        if (emoteID == 0) return 0;
+        var emoteRow = Svc.Data.GetExcelSheet<Emote>()?.GetRow(emoteID);
+        if (emoteRow == null) return 0;
+        var emote = emoteRow.Value;
+        if (!emote.TextCommand.IsValid || emote.RowId == 0) return 0;
+
+        return emote.Icon;
     }
 
     public static string FetchCommand(uint emoteID)

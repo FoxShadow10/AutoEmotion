@@ -1,13 +1,14 @@
+using AutoEmotion.Configuration.Data;
 using Dalamud.Configuration;
-using Dalamud.Game.Text;
 using Dalamud.Game.ClientState.Objects.SubKinds;
+using Dalamud.Game.Gui.Toast;
+using Dalamud.Game.Text;
 using Dalamud.Plugin;
+using ECommons.DalamudServices;
+using Lumina.Excel.Sheets;
 using System;
 using System.Collections.Generic;
-using ECommons.DalamudServices;
-using AutoEmotion.Configuration.Data;
-using Dalamud.Game.Gui.Toast;
-using Lumina.Excel.Sheets;
+using System.Linq;
 
 namespace AutoEmotion;
 
@@ -34,6 +35,7 @@ public class AutoEmotionConfig : IPluginConfiguration
     public List<string> triggerOrder = [];
     public List<XivChatType> allowedChannels { get; set; } = [XivChatType.Say];
 
+    //OBSOLETE, only for old version config loading
     public readonly bool[] visibleChannels =
         {
             false,//None
@@ -78,6 +80,28 @@ public class AutoEmotionConfig : IPluginConfiguration
             true,//CrossLinkShell7
             true//CrossLinkShell8
         };
+
+    public Dictionary<XivChatType, bool> visibleChannelsDictionary = CreateVisibleChannels();
+
+    private static Dictionary<XivChatType, bool> CreateVisibleChannels()
+    {
+        var dict = Enum.GetValues<XivChatType>().ToDictionary(e => e, e => false);
+
+        foreach (var channel in new[] {
+        XivChatType.Say, XivChatType.Shout, XivChatType.TellOutgoing,
+        XivChatType.Party, XivChatType.Alliance,
+        XivChatType.Ls1, XivChatType.Ls2, XivChatType.Ls3, XivChatType.Ls4,
+        XivChatType.Ls5, XivChatType.Ls6, XivChatType.Ls7, XivChatType.Ls8,
+        XivChatType.FreeCompany, XivChatType.NoviceNetwork, XivChatType.CustomEmote,
+        XivChatType.Yell, XivChatType.CrossParty, XivChatType.Echo,
+        XivChatType.CrossLinkShell1, XivChatType.CrossLinkShell2, XivChatType.CrossLinkShell3,
+        XivChatType.CrossLinkShell4, XivChatType.CrossLinkShell5, XivChatType.CrossLinkShell6,
+        XivChatType.CrossLinkShell7, XivChatType.CrossLinkShell8
+    })
+            dict[channel] = true;
+
+        return dict;
+    }
 
     public Dictionary<string, CharacterData> whiteList = new()
     {

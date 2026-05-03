@@ -1,7 +1,8 @@
-using System.Collections.Generic;
 using Dalamud.Bindings.ImGui;
-using FFXIVClientStructs.FFXIV.Common.Math;
 using Dalamud.Interface.Utility.Raii;
+using FFXIVClientStructs.FFXIV.Common.Math;
+using System;
+using System.Collections.Generic;
 
 namespace AutoEmotion.Configuration
 {
@@ -11,6 +12,16 @@ namespace AutoEmotion.Configuration
         {
             return new Dictionary<string, string[]>()
                 {
+                    {
+                        "v2.2.0",
+                        [
+                            "API update to 15",
+                            "Added regex support, enabled by prefixing the keyword with the |rgx| tag"
+                                + Environment.NewLine +
+                                "(ie. |rgx|^hello+$ will only match messages that consist of “hell” followed by one or more “o” characters, such as “hello”, “helloo”, etc.)",
+                            "I had to change how enabled channels are stored, so they need to be set up again. Sorry for the inconvenience."
+                        ]
+                    },
                     {
                         "v2.1.3",
                         [

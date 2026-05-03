@@ -144,7 +144,7 @@ namespace AutoEmotion
 
             foreach (var keyword in config.triggerLists)
             {
-                if (CompareStrings(lowerInput, keyword.Key.ToLower(), true, false))
+                if (keyword.Key.StartsWith("|rgx|") || CompareStrings(lowerInput, keyword.Key.ToLower(), true, false))
                 {
                     candidates.Add(config.triggerLists.GetValueOrDefault(keyword.Key, []));
                 }
@@ -159,7 +159,21 @@ namespace AutoEmotion
 
                     bool isMatch = false;
 
-                    if (data.isContains || data.trigger.Contains(" "))
+                    if (data.trigger.StartsWith("|rgx|"))
+                    {
+                        var pattern = data.trigger.Substring(5);
+                        try
+                        {
+                            var options = data.isCaseSensitive ? RegexOptions.None : RegexOptions.IgnoreCase;
+                            isMatch = Regex.IsMatch(input, pattern, options);
+                            Svc.Log.Debug($"Regex '{pattern}' against '{input}': {isMatch}");
+                        }
+                        catch (Exception e)
+                        {
+                            Svc.Log.Error($"Invalid regex pattern '{pattern}': {e.Message}");
+                        }
+                    }
+                    else if (data.isContains || data.trigger.Contains(" "))
                     {
                         // Check if the search text is contained anywhere in the text
                         isMatch = CompareStrings(input, data.trigger, data.isCaseSensitive, false);
