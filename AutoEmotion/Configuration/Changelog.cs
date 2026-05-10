@@ -13,6 +13,12 @@ namespace AutoEmotion.Configuration
             return new Dictionary<string, string[]>()
                 {
                     {
+                        "v2.2.3",
+                        [
+                            "Cleaned up the emote and expression lists: invalid entries with no name, no icon or a missing icon file are no longer shown."
+                        ]
+                    },
+                    {
                         "v2.2.0",
                         [
                             "API update to 15",

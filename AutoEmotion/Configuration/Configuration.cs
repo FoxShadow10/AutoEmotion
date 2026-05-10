@@ -83,26 +83,6 @@ public class AutoEmotionConfig : IPluginConfiguration
 
     public Dictionary<XivChatType, bool> visibleChannelsDictionary = CreateVisibleChannels();
 
-    private static Dictionary<XivChatType, bool> CreateVisibleChannels()
-    {
-        var dict = Enum.GetValues<XivChatType>().ToDictionary(e => e, e => false);
-
-        foreach (var channel in new[] {
-        XivChatType.Say, XivChatType.Shout, XivChatType.TellOutgoing,
-        XivChatType.Party, XivChatType.Alliance,
-        XivChatType.Ls1, XivChatType.Ls2, XivChatType.Ls3, XivChatType.Ls4,
-        XivChatType.Ls5, XivChatType.Ls6, XivChatType.Ls7, XivChatType.Ls8,
-        XivChatType.FreeCompany, XivChatType.NoviceNetwork, XivChatType.CustomEmote,
-        XivChatType.Yell, XivChatType.CrossParty, XivChatType.Echo,
-        XivChatType.CrossLinkShell1, XivChatType.CrossLinkShell2, XivChatType.CrossLinkShell3,
-        XivChatType.CrossLinkShell4, XivChatType.CrossLinkShell5, XivChatType.CrossLinkShell6,
-        XivChatType.CrossLinkShell7, XivChatType.CrossLinkShell8
-    })
-            dict[channel] = true;
-
-        return dict;
-    }
-
     public Dictionary<string, CharacterData> whiteList = new()
     {
       { EveryoneKey, new CharacterData { name = "Everyone", worldName="Everywhere"} }
@@ -164,6 +144,26 @@ public class AutoEmotionConfig : IPluginConfiguration
         {
             Svc.Log.Error("Error on adding the target on the list.");
         }
+    }
+
+    private static Dictionary<XivChatType, bool> CreateVisibleChannels()
+    {
+        var dict = Enum.GetValues<XivChatType>().ToDictionary(e => e, e => false);
+
+        foreach (var channel in new[] {
+        XivChatType.Say, XivChatType.Shout, XivChatType.TellOutgoing,
+        XivChatType.Party, XivChatType.Alliance,
+        XivChatType.Ls1, XivChatType.Ls2, XivChatType.Ls3, XivChatType.Ls4,
+        XivChatType.Ls5, XivChatType.Ls6, XivChatType.Ls7, XivChatType.Ls8,
+        XivChatType.FreeCompany, XivChatType.NoviceNetwork, XivChatType.CustomEmote,
+        XivChatType.Yell, XivChatType.CrossParty, XivChatType.Echo,
+        XivChatType.CrossLinkShell1, XivChatType.CrossLinkShell2, XivChatType.CrossLinkShell3,
+        XivChatType.CrossLinkShell4, XivChatType.CrossLinkShell5, XivChatType.CrossLinkShell6,
+        XivChatType.CrossLinkShell7, XivChatType.CrossLinkShell8
+    })
+            dict[channel] = true;
+
+        return dict;
     }
 
     private void CalculatePriorities()

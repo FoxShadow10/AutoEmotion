@@ -227,7 +227,7 @@ namespace AutoEmotion
         {
             using (ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, Vector2.One * ImGuiHelpers.GlobalScale))
             {
-                if (ThreadLoadImageHandler.TryGetIconTextureWrap(EmoteIdentifier.FetchIcon(previewID), false, out var iconPicture))
+                if (ThreadLoadImageHandler.TryGetIconTextureWrap(EmoteIdentifier.FetchIcon(previewID), false, out var iconPicture) && iconPicture != null)
                 {
                     ImGui.Image(iconPicture.Handle, new(chkSize));
                 }

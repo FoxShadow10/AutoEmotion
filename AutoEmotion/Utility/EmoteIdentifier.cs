@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Dalamud.Interface.Textures;
 using Dalamud.Utility;
 using Lumina.Excel.Sheets;
 using Newtonsoft.Json;
@@ -12,6 +13,19 @@ public unsafe record EmoteIdentifier([property: JsonProperty("e")] uint EmoteID)
 {
     private static readonly short ExpressionID = 3;
 
+    private static bool IsValidEmote(Emote emote)
+    {
+        if (!emote.EmoteCategory.IsValid) return false;
+        if (!emote.TextCommand.IsValid) return false;
+        if (emote.Icon == 0) return false;
+        if (string.IsNullOrWhiteSpace(emote.Name.ToDalamudString().TextValue)) return false;
+        if (!IconFileExists(emote.Icon)) return false;
+        return true;
+    }
+
+    private static bool IconFileExists(uint iconId)
+        => Svc.Texture.TryGetIconPath(new GameIconLookup(iconId), out _);
+
     public static Lazy<List<EmoteIdentifier>> EmoteList = new(() =>
     {
         var list = new List<EmoteIdentifier>
@@ -20,11 +34,9 @@ public unsafe record EmoteIdentifier([property: JsonProperty("e")] uint EmoteID)
         };
         foreach (var emote in Svc.Data.GetExcelSheet<Emote>()!)
         {
-            if (emote.TextCommand.IsValid == false || emote.EmoteCategory.Value.RowId == ExpressionID) continue;
-            for (byte i = 0; i < emote.RowId switch { 1 => 1, 2 => 1, 3 => 1, _ => 1 }; i++)
-            {
-                list.Add(new EmoteIdentifier(emote.RowId));
-            }
+            if (!IsValidEmote(emote)) continue;
+            if (emote.EmoteCategory.Value.RowId == ExpressionID) continue;
+            list.Add(new EmoteIdentifier(emote.RowId));
         }
         return list;
     });
@@ -37,7 +49,8 @@ public unsafe record EmoteIdentifier([property: JsonProperty("e")] uint EmoteID)
         };
         foreach (var emote in Svc.Data.GetExcelSheet<Emote>()!)
         {
-            if (emote.TextCommand.IsValid == false || emote.EmoteCategory.Value.RowId != ExpressionID) continue;
+            if (!IsValidEmote(emote)) continue;
+            if (emote.EmoteCategory.Value.RowId != ExpressionID) continue;
             list.Add(new EmoteIdentifier(emote.RowId));
         }
         return list;
