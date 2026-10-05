@@ -1,3 +1,10 @@
+# ⚠️ Project Status ⚠️
+
+This project is no longer actively maintained or supported by the original author.
+
+The repository remains available under the terms of its existing license. Anyone interested in continuing development, maintenance, or further improvements is welcome to fork the project and take it forward.
+
+
 # AutoEmotion
 
 <img src="./AutoEmotion/images/plugin_icon.png" align="left" style="margin-right:15px"> 
